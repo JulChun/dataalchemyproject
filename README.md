@@ -6,8 +6,5 @@ This project is an interactive Streamlit dashboard for analyzing and predicting 
 
 1. Install dependencies:
 
+```bash
 pip install -r requirements.txt
-
-2. Run the app:
-
-streamlit run Home.py
