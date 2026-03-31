@@ -2,12 +2,18 @@
 
 This project is an interactive Streamlit dashboard for analyzing and predicting student performance.
 
-## How to run
+---
 
-1. Install dependencies:
+## Features
 
-```bash
-pip install -r requirements.txt
+- Exploratory Data Analysis (EDA)
+- Data preprocessing and cleaning
+- Multiple machine learning models
+- Model comparison and evaluation
+- Interactive prediction tool
+- Insights and conclusions
+
+---
 
 ## Project Structure
 
@@ -15,3 +21,15 @@ pip install -r requirements.txt
 - pages/ — all dashboard sections (EDA, Modeling, Insights, etc.)  
 - StudentsPerformance.csv — dataset  
 - requirements.txt — dependencies  
+
+---
+
+## How to Run
+
+1. Install dependencies:
+
+pip install -r requirements.txt
+
+2. Run the app:
+
+streamlit run Home.py
