@@ -5,8 +5,7 @@ import plotly.express as px
 st.title("EDA")
 
 st.info(
-    "This section helps explore how student background and preparation relate "
-    "to academic performance."
+    "This section helps explore how student background and preparation relate to academic performance."
 )
 
 # -------------------------
@@ -19,6 +18,12 @@ df["average_score"] = (
     df["reading score"] +
     df["writing score"]
 ) / 3
+
+# Human-friendly renamed column for UI
+df["income_level"] = df["lunch"].map({
+    "standard": "Higher income family",
+    "free/reduced": "Low income family"
+})
 
 # -------------------------
 # Human-friendly filters
@@ -34,10 +39,10 @@ with col1:
         default=["Female student", "Male student"]
     )
 
-    lunch_filter = st.multiselect(
-        "Lunch support level",
-        ["Standard lunch", "Free or reduced lunch"],
-        default=["Standard lunch", "Free or reduced lunch"]
+    income_filter = st.multiselect(
+        "Family income level",
+        ["Higher income family", "Low income family"],
+        default=["Higher income family", "Low income family"]
     )
 
 with col2:
@@ -78,9 +83,9 @@ gender_map = {
     "Male student": "male"
 }
 
-lunch_map = {
-    "Standard lunch": "standard",
-    "Free or reduced lunch": "free/reduced"
+income_map = {
+    "Higher income family": "Higher income family",
+    "Low income family": "Low income family"
 }
 
 prep_map = {
@@ -98,13 +103,13 @@ parent_map = {
 }
 
 selected_gender = [gender_map[x] for x in gender_filter]
-selected_lunch = [lunch_map[x] for x in lunch_filter]
+selected_income = [income_map[x] for x in income_filter]
 selected_prep = [prep_map[x] for x in prep_filter]
 selected_parent = [parent_map[x] for x in parent_filter]
 
 filtered_df = df[
     (df["gender"].isin(selected_gender)) &
-    (df["lunch"].isin(selected_lunch)) &
+    (df["income_level"].isin(selected_income)) &
     (df["test preparation course"].isin(selected_prep)) &
     (df["parental level of education"].isin(selected_parent))
 ]
@@ -129,7 +134,18 @@ with m4:
 # Dataset preview
 # -------------------------
 with st.expander("Show filtered dataset preview"):
-    st.dataframe(filtered_df, use_container_width=True)
+    preview_df = filtered_df[[
+        "gender",
+        "race/ethnicity",
+        "parental level of education",
+        "income_level",
+        "test preparation course",
+        "math score",
+        "reading score",
+        "writing score",
+        "average_score"
+    ]]
+    st.dataframe(preview_df, use_container_width=True)
 
 # -------------------------
 # Distribution chart
@@ -150,7 +166,7 @@ fig1 = px.histogram(
 st.plotly_chart(fig1, use_container_width=True)
 
 st.caption(
-    "This chart helps show how student performance is distributed and whether scores are concentrated or spread out."
+    "This chart shows how student scores are distributed."
 )
 
 # -------------------------
@@ -160,7 +176,12 @@ st.subheader("Compare Student Groups")
 
 group_choice = st.selectbox(
     "Compare groups by",
-    ["gender", "lunch", "test preparation course", "parental level of education"]
+    [
+        "gender",
+        "income_level",
+        "test preparation course",
+        "parental level of education"
+    ]
 )
 
 metric_choice = st.selectbox(
@@ -179,7 +200,7 @@ fig2.update_layout(xaxis_tickangle=-30)
 st.plotly_chart(fig2, use_container_width=True)
 
 st.caption(
-    "This chart helps compare score patterns across student groups and shows spread, medians, and possible outliers."
+    "This box plot compares score patterns across student groups."
 )
 
 # -------------------------
@@ -190,18 +211,25 @@ st.subheader("Explore Relationships Between Scores")
 x_axis = st.selectbox(
     "Choose X-axis",
     ["math score", "reading score", "writing score", "average_score"],
+    index=0,
     key="x_axis"
 )
 
 y_axis = st.selectbox(
     "Choose Y-axis",
-    ["math score", "reading score", "writing score", "average_score"],
+    ["reading score", "writing score", "math score", "average_score"],
+    index=0,
     key="y_axis"
 )
 
 color_choice = st.selectbox(
     "Color points by",
-    ["gender", "lunch", "test preparation course", "race/ethnicity"],
+    [
+        "gender",
+        "income_level",
+        "test preparation course",
+        "race/ethnicity"
+    ],
     key="color_choice"
 )
 
@@ -215,7 +243,7 @@ fig3 = px.scatter(
 st.plotly_chart(fig3, use_container_width=True)
 
 st.caption(
-    "This chart helps reveal relationships between academic outcomes and whether those patterns differ by student group."
+    "This scatter plot shows the relationship between two score variables and highlights group differences."
 )
 
 # -------------------------
@@ -236,7 +264,7 @@ fig4 = px.imshow(
 st.plotly_chart(fig4, use_container_width=True)
 
 st.caption(
-    "This heatmap shows how strongly the score variables move together. Stronger values suggest closer relationships."
+    "This heatmap shows how strongly the score variables are related to each other."
 )
 
 # -------------------------
@@ -246,7 +274,7 @@ st.subheader("EDA Takeaway")
 
 if len(filtered_df) > 0:
     st.success(
-        "The filtered view helps show how preparation, lunch support, gender, and parent education may relate to student performance."
+        "The filtered view shows how preparation, family income level, gender, and parent education may relate to student performance."
     )
 else:
     st.warning("No students match the selected filters. Try broadening your selections.")
